@@ -1,4 +1,5 @@
 package models;
+
 public class AnimalMarinho {
     private String nome;
     private String genero;
