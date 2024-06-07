@@ -1,10 +1,14 @@
 package models;
 
+import java.util.ArrayList;
+
 public class Especie {
     private String especie;
     private String habitat;
     private String ameacas;
     private String status;
+
+    private static ArrayList<Especie> especies = new ArrayList<>();
 
     public Especie(String especie, String habitat, String ameacas, String status) {
         this.especie = especie;
@@ -50,5 +54,22 @@ public class Especie {
         System.out.println("Habitat: " + habitat);
         System.out.println("Ameaças: " + ameacas);
         System.out.println("Status de Preservação: " + status);
+    }
+
+    public static void adicionarEspecie(Especie especie) {
+        especies.add(especie);
+    }
+
+    public static ArrayList<Especie> getEspecies() {
+        return especies;
+    }
+
+    public static Especie encontrarEspecie(String nome) {
+        for (Especie especie : especies) {
+            if (especie.getEspecie().equalsIgnoreCase(nome)) {
+                return especie;
+            }
+        }
+        return null;
     }
 }
