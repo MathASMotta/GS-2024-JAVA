@@ -19,6 +19,11 @@ public class Main {
             System.out.println("6. Gerar relatório");
             System.out.println("0. Sair");
             System.out.print("Escolha uma opção: ");
+            while (!scanner.hasNextInt()) {
+                System.out.println("Entrada inválida. Por favor, insira um número.");
+                scanner.next(); // Consumir entrada inválida
+                System.out.print("Escolha uma opção: ");
+            }
             opcao = scanner.nextInt();
             scanner.nextLine();  // Consumir a nova linha
             
@@ -52,21 +57,16 @@ public class Main {
     }
 
     private static void cadastrarAnimal(Scanner scanner) {
-        System.out.print("Nome do animal: ");
-        String nome = scanner.nextLine();
-        System.out.print("Gênero: ");
-        String genero = scanner.nextLine();
-        System.out.print("Unidade de tratamento: ");
-        String unidadeTratamento = scanner.nextLine();
-
-        System.out.print("Nome da Espécie: ");
-        String especieNome = scanner.nextLine();
+        String nome = obterEntradaValida(scanner, "Nome do animal: ");
+        String genero = obterEntradaValida(scanner, "Gênero: ");
+        String unidadeTratamento = obterEntradaValida(scanner, "Unidade de tratamento: ");
+        String especieNome = obterEntradaValida(scanner, "Nome da Espécie: ");
 
         Especie especie = Especie.encontrarEspecie(especieNome);
         if (especie == null) {
             System.out.println("Esta espécie ainda não foi cadastrada!");
             System.out.println("Cadastre a espécie primeiro.");
-            cadastrarEspecie(scanner);
+            cadastrarEspecie(scanner, especieNome);
             especie = Especie.encontrarEspecie(especieNome);
         }
 
@@ -90,16 +90,17 @@ public class Main {
     }
 
     private static void cadastrarEspecie(Scanner scanner) {
-        System.out.print("Nome da Espécie: ");
-        String nome = scanner.nextLine();
-        System.out.print("Habitat: ");
-        String habitat = scanner.nextLine();
-        System.out.print("Ameaças: ");
-        String ameacas = scanner.nextLine();
-        System.out.print("Status de Preservação: ");
-        String status = scanner.nextLine();
+        String nome = obterEntradaValida(scanner, "Nome da Espécie: ");
+        cadastrarEspecie(scanner, nome);
+    }
 
-        Especie especie = new Especie(nome, habitat, ameacas, status);
+    private static void cadastrarEspecie(Scanner scanner, String nomeEspecie) {
+        System.out.println("Cadastrando espécie: " + nomeEspecie);
+        String habitat = obterEntradaValida(scanner, "Habitat: ");
+        String ameacas = obterEntradaValida(scanner, "Ameaças: ");
+        String status = obterEntradaValida(scanner, "Status de Preservação: ");
+
+        Especie especie = new Especie(nomeEspecie, habitat, ameacas, status);
         Especie.adicionarEspecie(especie);
 
         System.out.println("Espécie cadastrada com sucesso!");
@@ -118,8 +119,7 @@ public class Main {
     }
 
     private static void adicionarSensorAnimal(Scanner scanner) {
-        System.out.print("Nome do animal ao qual deseja adicionar um sensor: ");
-        String nomeAnimal = scanner.nextLine();
+        String nomeAnimal = obterEntradaValida(scanner, "Nome do animal ao qual deseja adicionar um sensor: ");
 
         Animal animal = null;
         for (Animal a : Animal.getAnimais()) {
@@ -134,17 +134,16 @@ public class Main {
             return;
         }
 
-        System.out.print("Identificador do sensor (até 4 caracteres): ");
-        String identificador = scanner.nextLine();
-        if (identificador.length() > 4) {
-            System.out.println("Identificador muito longo. Deve ter até 4 caracteres.");
-            return;
-        }
+        String identificador;
+        do {
+            identificador = obterEntradaValida(scanner, "Identificador do sensor (até 4 caracteres): ");
+            if (identificador.length() > 4) {
+                System.out.println("Identificador muito longo. Deve ter até 4 caracteres.");
+            }
+        } while (identificador.length() > 4);
 
-        System.out.print("Tipo de sensor: ");
-        String tipo = scanner.nextLine();
-        System.out.print("Status do sensor: ");
-        String status = scanner.nextLine();
+        String tipo = obterEntradaValida(scanner, "Tipo de sensor: ");
+        String status = obterEntradaValida(scanner, "Status do sensor: ");
 
         Sensor sensor = new Sensor(tipo, status, identificador);
         animal.adicionarSensor(sensor);
@@ -182,5 +181,18 @@ public class Main {
             System.out.println("------------------------------");
         }
     }
+
+    private static String obterEntradaValida(Scanner scanner, String mensagem) {
+        String entrada;
+        boolean valida;
+        do {
+            System.out.print(mensagem);
+            entrada = scanner.nextLine();
+            valida = entrada.matches("[a-zA-Z ]+");
+            if (!valida) {
+                System.out.println("Entrada inválida. Por favor, insira apenas letras e espaços.");
+            }
+        } while (!valida);
+        return entrada;
+    }
 }
-    
